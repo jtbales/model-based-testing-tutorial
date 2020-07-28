@@ -8,12 +8,12 @@ const getEventConfigs = () => {
   const eventConfigs = {
     GO_UP: {
       exec: async ({ getByText }: RenderResult) => {
-        // Action
+        fireEvent.click(getByText("Up"));
       },
     },
     GO_DOWN: {
       exec: async ({ getByText }: RenderResult) => {
-        // Action
+        fireEvent.click(getByText("Down"));
       },
     },
   };
@@ -23,12 +23,12 @@ const getEventConfigs = () => {
 
 const bottomTest = {
   test: async ({ getByText }: RenderResult) => {
-    // Assert
+    await wait(() => expect(() => getByText("Floor 1")).not.toThrowError());
   },
 };
 const topTest = {
   test: async ({ getByText }: RenderResult) => {
-    // Assert
+    await wait(() => expect(() => getByText("Floor 2")).not.toThrowError());
   },
 };
 

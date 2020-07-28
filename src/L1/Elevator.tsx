@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-// import "../Elevator.css";
+import "../Elevator.css";
 import Button from "@material-ui/core/Button";
-import { createMachine, Machine } from "xstate";
+import { Machine } from "xstate";
 import Slider from "@material-ui/core/Slider";
 import { useMachine } from "@xstate/react";
 

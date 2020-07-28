@@ -4,7 +4,6 @@ import { createModel } from "@xstate/test";
 import { State, StateMachine, Machine } from "xstate";
 import { testUrl } from "../Constants";
 import { getElevatorMachineDefinition } from "../../../src/L1/Elevator";
-import { RenderResult, fireEvent } from "@testing-library/react";
 
 // describe("My First Test", () => {
 //   it("Visits the Kitchen Sink", () => {
@@ -16,13 +15,13 @@ import { RenderResult, fireEvent } from "@testing-library/react";
 const getEventConfigs = () => {
   const eventConfigs = {
     GO_UP: {
-      exec: async ({ getByText }: RenderResult) => {
-        fireEvent.click(getByText("UP"));
+      exec: async (cy: Cypress.cy & EventEmitter) => {
+        cy.contains("UP").click();
       },
     },
     GO_DOWN: {
-      exec: async ({ getByText }: RenderResult) => {
-        fireEvent.click(getByText("DOWN"));
+      exec: async (cy: Cypress.cy & EventEmitter) => {
+        cy.contains("DOWN").click();
       },
     },
   };
@@ -31,12 +30,12 @@ const getEventConfigs = () => {
 };
 
 const bottomTest = {
-  test: ({ getByText }: RenderResult) => {
+  test: (cy: Cypress.cy & EventEmitter) => {
     cy.contains("Floor 1");
   },
 };
 const topTest = {
-  test: ({ getByText }: RenderResult) => {
+  test: (cy: Cypress.cy & EventEmitter) => {
     cy.contains("Floor 2");
   },
 };
