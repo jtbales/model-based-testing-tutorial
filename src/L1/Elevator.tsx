@@ -1,30 +1,23 @@
 import React, { useState, useEffect } from "react";
-import "./Elevator.css";
+// import "../Elevator.css";
 import Button from "@material-ui/core/Button";
-import { createMachine } from "xstate";
+import { createMachine, Machine } from "xstate";
 import Slider from "@material-ui/core/Slider";
 import { useMachine } from "@xstate/react";
 
-type ElevatorMachineServices = {
-  getMessageAtTop: () => Promise<string>;
-};
-
-type ElevatorProps = {
-  services: any;
-};
-
-const createElevatorMachine = () =>
-  createMachine({
-    id: "elevator",
-    initial: "bottom",
-    states: {
-      bottom: { on: { GO_UP: "top" } },
-      top: { on: { GO_DOWN: "bottom" } },
-    },
-  });
+const getElevatorMachineDefinition = () => ({
+  id: "elevator",
+  initial: "bottom",
+  states: {
+    bottom: { on: { GO_UP: "top" } },
+    top: { on: { GO_DOWN: "bottom" } },
+  },
+});
 
 const Elevator: React.FC = () => {
-  const [elevatorMachineState, send] = useMachine(createElevatorMachine());
+  const [elevatorMachineState, send] = useMachine(
+    Machine(getElevatorMachineDefinition())
+  );
 
   const [floor, setFloor] = useState<1 | 2>(1);
 
@@ -74,3 +67,4 @@ const Elevator: React.FC = () => {
 };
 
 export default Elevator;
+export { getElevatorMachineDefinition };

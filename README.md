@@ -1,1 +1,1 @@
-# model-based-testing-tutorial
+`npx cypress open`

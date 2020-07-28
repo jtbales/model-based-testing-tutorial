@@ -1,0 +1,25 @@
+.slider {
+  height: 200px;
+}
+
+.container {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container div {
+  margin-bottom: 20px;
+}
+
+.buttons {
+  flex-direction: row;
+}
+
+.buttons button {
+  margin-left: 10px;
+  margin-right: 10px;
+}

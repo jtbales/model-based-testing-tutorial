@@ -3,7 +3,7 @@ import Elevator from "./Elevator";
 
 function App() {
   return (
-    <div className="App">
+    <div>
       <Elevator />
     </div>
   );
