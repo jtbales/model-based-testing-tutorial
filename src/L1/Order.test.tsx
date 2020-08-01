@@ -1,18 +1,18 @@
 import { createModel } from "@xstate/test";
 import { Machine } from "xstate";
-import Elevator, { getElevatorMachineDefinition } from "./Elevator";
+import Order, { getOrderMachineDefinition } from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
 const getEventConfigs = () => {
   const eventConfigs = {
-    GO_UP: {
-      exec: async ({ getByText }: RenderResult) => {
+    ADD_TO_CART: {
+      exec: async () => {
         // Action
       },
     },
-    GO_DOWN: {
-      exec: async ({ getByText }: RenderResult) => {
+    PLACE_ORDER: {
+      exec: async () => {
         // Action
       },
     },
@@ -21,23 +21,29 @@ const getEventConfigs = () => {
   return eventConfigs;
 };
 
-const bottomTest = {
-  test: async ({ getByText }: RenderResult) => {
+const shoppingTest = {
+  test: async () => {
     // Assert
   },
 };
-const topTest = {
-  test: async ({ getByText }: RenderResult) => {
+const cartTest = {
+  test: async () => {
+    // Assert
+  },
+};
+const orderedTest = {
+  test: async () => {
     // Assert
   },
 };
 
-describe("Elevator", () => {
+describe("Order", () => {
   describe("matches all paths", () => {
-    const testMachineDefinition = getElevatorMachineDefinition();
+    const testMachineDefinition = getOrderMachineDefinition();
 
-    (testMachineDefinition.states.bottom as any).meta = bottomTest;
-    (testMachineDefinition.states.top as any).meta = topTest;
+    (testMachineDefinition.states.shopping as any).meta = shoppingTest;
+    (testMachineDefinition.states.cart as any).meta = cartTest;
+    (testMachineDefinition.states.ordered as any).meta = orderedTest;
 
     const testMachine = Machine(testMachineDefinition);
 
@@ -51,7 +57,7 @@ describe("Elevator", () => {
       describe(plan.description, () => {
         plan.paths.forEach((path) => {
           it(path.description, async () => {
-            await path.test(render(<Elevator />));
+            await path.test(render(<Order />));
           });
         });
       });

@@ -3,7 +3,7 @@
 import { createModel } from "@xstate/test";
 import { State, StateMachine, Machine } from "xstate";
 import { testUrl } from "../Constants";
-import { getElevatorMachineDefinition } from "../../../src/L1/Elevator";
+import { getOrderMachineDefinition } from "../../../src/L1/Order";
 
 // describe("My First Test", () => {
 //   it("Visits the Kitchen Sink", () => {
@@ -40,9 +40,9 @@ const topTest = {
   },
 };
 
-describe("Elevator", () => {
+describe("Order", () => {
   describe("matches all paths", () => {
-    const testMachineDefinition = getElevatorMachineDefinition();
+    const testMachineDefinition = getOrderMachineDefinition();
 
     (testMachineDefinition.states.bottom as any).meta = bottomTest;
     (testMachineDefinition.states.top as any).meta = topTest;

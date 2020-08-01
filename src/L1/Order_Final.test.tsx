@@ -1,19 +1,19 @@
 import { createModel } from "@xstate/test";
 import { Machine } from "xstate";
-import Elevator, { getElevatorMachineDefinition } from "./Elevator";
+import Order, { getOrderMachineDefinition } from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
 const getEventConfigs = () => {
   const eventConfigs = {
-    GO_UP: {
+    ADD_TO_CART: {
       exec: async ({ getByText }: RenderResult) => {
-        fireEvent.click(getByText("Up"));
+        fireEvent.click(getByText("Add to cart"));
       },
     },
-    GO_DOWN: {
+    PLACE_ORDER: {
       exec: async ({ getByText }: RenderResult) => {
-        fireEvent.click(getByText("Down"));
+        fireEvent.click(getByText("Place Order"));
       },
     },
   };
@@ -21,23 +21,29 @@ const getEventConfigs = () => {
   return eventConfigs;
 };
 
-const bottomTest = {
+const shoppingTest = {
   test: async ({ getByText }: RenderResult) => {
-    await wait(() => expect(() => getByText("Floor 1")).not.toThrowError());
+    await wait(() => expect(() => getByText("shopping")).not.toThrowError());
   },
 };
-const topTest = {
+const cartTest = {
   test: async ({ getByText }: RenderResult) => {
-    await wait(() => expect(() => getByText("Floor 2")).not.toThrowError());
+    await wait(() => expect(() => getByText("cart")).not.toThrowError());
+  },
+};
+const orderedTest = {
+  test: async ({ getByText }: RenderResult) => {
+    await wait(() => expect(() => getByText("ordered")).not.toThrowError());
   },
 };
 
-describe("Elevator", () => {
+describe("Order", () => {
   describe("matches all paths", () => {
-    const testMachineDefinition = getElevatorMachineDefinition();
+    const testMachineDefinition = getOrderMachineDefinition();
 
-    (testMachineDefinition.states.bottom as any).meta = bottomTest;
-    (testMachineDefinition.states.top as any).meta = topTest;
+    (testMachineDefinition.states.shopping as any).meta = shoppingTest;
+    (testMachineDefinition.states.cart as any).meta = cartTest;
+    (testMachineDefinition.states.ordered as any).meta = orderedTest;
 
     const testMachine = Machine(testMachineDefinition);
 
@@ -51,7 +57,7 @@ describe("Elevator", () => {
       describe(plan.description, () => {
         plan.paths.forEach((path) => {
           it(path.description, async () => {
-            await path.test(render(<Elevator />));
+            await path.test(render(<Order />));
           });
         });
       });
