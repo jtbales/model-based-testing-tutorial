@@ -2,15 +2,11 @@
 
 ### Lessons
 
-L1. Basic MBT UI Tests
-
-L2. Using Test Machine Context to repeat paths
-
-L3. Using Test Machine Context to explore non-shortest paths
-
-L4. Testing Asynchronous Services 
-
-L5. Model Based Testing the State Machine
+1. Basic MBT UI Tests
+2. Using Test Machine Context to repeat paths
+3. Using Test Machine Context to explore non-shortest paths
+4. Testing Asynchronous Services 
+5. Model Based Testing the State Machine
 
 ### First Steps
 
