@@ -70,7 +70,7 @@ describe("Order", () => {
     );
 
     // Add filter to handle infinite iterations
-    const testPlans = testModel.getSimplePathPlans();
+    const testPlans = testModel.getShortestPathPlans();
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {

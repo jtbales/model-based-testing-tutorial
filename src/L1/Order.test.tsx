@@ -4,8 +4,17 @@ import Order, { getOrderMachineDefinition } from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+// This is the basic setup for model based testing
+// Note the relation to the MBT diagram
+// render(<Order />) is passed into path.test, thus all Event and Assert
+//    functions can deconstruct from render
+// Fill in the comments
+// 1. Deconstruct getByText
+// 2. Act and Assert as you would in any ordinary test
+
 const getEventConfigs = () => {
   const eventConfigs = {
+    // What action in the UI would trigger this event?
     ADD_TO_CART: {
       exec: async () => {
         // Action
@@ -22,6 +31,7 @@ const getEventConfigs = () => {
 };
 
 const shoppingTest = {
+  // What do I assert to verify the UI is in the Shopping state?
   test: async () => {
     // Assert
   },
@@ -51,7 +61,7 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    const testPlans = testModel.getSimplePathPlans();
+    const testPlans = testModel.getShortestPathPlans();
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {

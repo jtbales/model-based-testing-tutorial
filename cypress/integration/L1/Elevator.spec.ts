@@ -53,7 +53,7 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    const testPlans = testModel.getSimplePathPlans();
+    const testPlans = testModel.getShortestPathPlans();
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {

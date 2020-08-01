@@ -9,8 +9,8 @@ const getOrderMachineDefinition = () => ({
   initial: "shopping",
   states: {
     shopping: { on: { ADD_TO_CART: "cart" } },
-    cart: { on: { PLACE_ORDER: "ordered" } },
-    // Added transition to loop back to the start of the state machine
+    // Added cancel option
+    cart: { on: { PLACE_ORDER: "ordered", CANCEL: "shopping" } },
     ordered: { on: { CONTINUE_SHOPPING: "shopping" } },
   },
 });
@@ -40,6 +40,11 @@ const Order: React.FC = () => {
             onClick={() => send("PLACE_ORDER")}
           >
             Place Order
+          </Button>
+        )}
+        {orderMachineState.value === "cart" && (
+          <Button variant="contained" onClick={() => send("CANCEL")}>
+            Cancel
           </Button>
         )}
         {orderMachineState.value === "ordered" && (

@@ -84,7 +84,7 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    const testPlans = testModel.getSimplePathPlans({
+    const testPlans = testModel.getShortestPathPlans({
       filter: (state) => state.context.ordersCompleted <= 1,
     });
 

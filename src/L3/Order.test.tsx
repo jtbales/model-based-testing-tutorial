@@ -4,24 +4,41 @@ import Order from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
-// 1. Add Event
-// 2. Run tests, notice that the tests does not loop over previously visited states
-// 3. Context is consider part of a unique state, use context to allow the
-//    test to iterated a second time.
-// 4. Woh! You'll need a filter on the path generation to stop it from looping forever
+// 1. Add cancel event to event config
+// 2. Update test machine to have cancel option
+// 3. Run the test, notice how the Cancel action is not taken
+// 4. Use context to make the test Cancel once
+// 5. Don't forget to filter path generation!
 
-// Context is considered a unique state
 const getTestMachine = () =>
-  Machine({
-    id: "order",
-    initial: "shopping",
-    context: {},
-    states: {
-      shopping: { on: { ADD_TO_CART: "cart" } },
-      cart: { on: { PLACE_ORDER: "ordered" } },
-      ordered: { on: { CONTINUE_SHOPPING: "shopping" } },
+  Machine(
+    {
+      id: "order",
+      initial: "shopping",
+      context: {
+        ordersCompleted: 0,
+      },
+      states: {
+        shopping: { on: { ADD_TO_CART: "cart" } },
+        cart: { on: { PLACE_ORDER: "ordered" } },
+        ordered: {
+          on: {
+            CONTINUE_SHOPPING: {
+              actions: ["orderCompleted"],
+              target: "shopping",
+            },
+          },
+        },
+      },
     },
-  });
+    {
+      actions: {
+        orderCompleted: assign((context) => ({
+          ordersCompleted: context.ordersCompleted + 1,
+        })),
+      },
+    }
+  );
 
 const getEventConfigs = () => {
   const eventConfigs = {
@@ -35,7 +52,11 @@ const getEventConfigs = () => {
         fireEvent.click(getByText("Place Order"));
       },
     },
-    // New Event
+    CONTINUE_SHOPPING: {
+      exec: async ({ getByText }: RenderResult) => {
+        fireEvent.click(getByText("Continue Shopping"));
+      },
+    },
   };
 
   return eventConfigs;
@@ -69,8 +90,9 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    // Add filter to handle infinite iterations
-    const testPlans = testModel.getSimplePathPlans();
+    const testPlans = testModel.getShortestPathPlans({
+      filter: (state) => state.context.ordersCompleted <= 1,
+    });
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {
