@@ -1,12 +1,19 @@
 import { createModel } from "@xstate/test";
-import { Machine, assign } from "xstate";
-import Order from "./Order";
-import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
-import React from "react";
+import { Machine, assign, StateMachine, State } from "xstate";
+import createOrderMachine from "./OrderMachine";
 
 ////////////////////////////////////////////////////////////////////////////////
-// Testing Asynchronous Services - FINAL
+// Model Based Testing the State Machine - FINAL
 ////////////////////////////////////////////////////////////////////////////////
+
+const executeActions = (state: State<any>) => {
+  const { actions, context, _event } = state;
+
+  actions.forEach((action) => {
+    // eslint-disable-next-line no-unused-expressions
+    action.exec && action.exec(context, _event.data, undefined as any);
+  });
+};
 
 type PromiseCallbacks = {
   resolve: (value?: any) => void;
@@ -14,12 +21,14 @@ type PromiseCallbacks = {
 };
 
 type Shared = {
+  currentState: State<any>;
   submitOrderCallbacks?: PromiseCallbacks;
 };
 
 type TestCycleContext = {
-  target: RenderResult;
+  stateMachine: StateMachine<any, any, any>;
   shared: Shared;
+  setCurrentStateWithActions: (state: State<any>) => void;
   setSubmitOrderCallbacks: (submitOrderCallbacks: PromiseCallbacks) => void;
   submitOrderMock: jest.Mock<any, any>;
 };
@@ -83,47 +92,97 @@ const getTestMachine = () =>
 const getEventConfigs = () => {
   const eventConfigs = {
     ADD_TO_CART: {
-      exec: async ({ target: { getByText } }: TestCycleContext) => {
-        fireEvent.click(getByText("Add to cart"));
+      exec: async ({
+        stateMachine,
+        shared: { currentState },
+        setCurrentStateWithActions,
+      }: TestCycleContext) => {
+        setCurrentStateWithActions(
+          stateMachine.transition(currentState, {
+            type: "ADD_TO_CART",
+          } as any)
+        );
       },
     },
     PLACE_ORDER: {
       exec: async ({
-        target: { getByText },
+        stateMachine,
+        shared: { currentState },
         submitOrderMock,
         setSubmitOrderCallbacks,
+        setCurrentStateWithActions,
       }: TestCycleContext) => {
         const submitOrderPromise = new Promise((resolve, reject) => {
           setSubmitOrderCallbacks({ resolve, reject });
-        });
+        }).catch(() => {}); // Use catch to satisfy UnhandledPromiseRejectionWarning
 
         submitOrderMock.mockReturnValueOnce(submitOrderPromise);
 
-        fireEvent.click(getByText("Place Order"));
+        setCurrentStateWithActions(
+          stateMachine.transition(currentState, {
+            type: "PLACE_ORDER",
+          } as any)
+        );
       },
     },
     "done.invoke.submitOrder": {
-      exec: async ({ shared: { submitOrderCallbacks } }: TestCycleContext) => {
+      exec: async ({
+        stateMachine,
+        shared: { currentState, submitOrderCallbacks },
+        setCurrentStateWithActions,
+      }: TestCycleContext) => {
         if (submitOrderCallbacks) {
           submitOrderCallbacks.resolve();
+
+          setCurrentStateWithActions(
+            stateMachine.transition(currentState, {
+              type: "done.invoke.submitOrder",
+            } as any)
+          );
         }
       },
     },
     "error.platform.submitOrder": {
-      exec: async ({ shared: { submitOrderCallbacks } }: TestCycleContext) => {
+      exec: async ({
+        stateMachine,
+        shared: { currentState, submitOrderCallbacks },
+        setCurrentStateWithActions,
+      }: TestCycleContext) => {
         if (submitOrderCallbacks) {
           submitOrderCallbacks.reject(new Error());
+
+          setCurrentStateWithActions(
+            stateMachine.transition(currentState, {
+              type: "error.platform.submitOrder",
+            } as any)
+          );
         }
       },
     },
     CONTINUE_SHOPPING: {
-      exec: async ({ target: { getByText } }: TestCycleContext) => {
-        fireEvent.click(getByText("Continue Shopping"));
+      exec: async ({
+        stateMachine,
+        shared: { currentState },
+        setCurrentStateWithActions,
+      }: TestCycleContext) => {
+        setCurrentStateWithActions(
+          stateMachine.transition(currentState, {
+            type: "CONTINUE_SHOPPING",
+          } as any)
+        );
       },
     },
     CANCEL: {
-      exec: async ({ target: { getByText } }: TestCycleContext) => {
-        fireEvent.click(getByText("Cancel"));
+      exec: async ({
+        stateMachine,
+        shared: { currentState },
+        setCurrentStateWithActions,
+      }: TestCycleContext) => {
+        setCurrentStateWithActions(
+          stateMachine.transition(currentState, {
+            type: "CANCEL",
+          } as any)
+        );
       },
     },
   };
@@ -132,30 +191,28 @@ const getEventConfigs = () => {
 };
 
 const shoppingTest = {
-  test: async ({ target: { getByText } }: TestCycleContext) => {
-    await wait(() => expect(() => getByText("shopping")).not.toThrowError());
+  test: ({ shared: { currentState } }: TestCycleContext) => {
+    expect(currentState.value).toBe("shopping");
   },
 };
 const cartTest = {
-  test: async ({ target: { getByText } }: TestCycleContext) => {
-    await wait(() => expect(() => getByText("cart")).not.toThrowError());
+  test: ({ shared: { currentState } }: TestCycleContext) => {
+    expect(currentState.value).toBe("cart");
   },
 };
 const orderFailedTest = {
-  test: async ({ target: { getByText } }: TestCycleContext) => {
-    await wait(() => expect(() => getByText("orderFailed")).not.toThrowError());
+  test: ({ shared: { currentState } }: TestCycleContext) => {
+    expect(currentState.value).toBe("orderFailed");
   },
 };
 const placingOrderTest = {
-  test: async ({ target: { getByText } }: TestCycleContext) => {
-    await wait(() =>
-      expect(() => getByText("placingOrder")).not.toThrowError()
-    );
+  test: ({ shared: { currentState } }: TestCycleContext) => {
+    expect(currentState.value).toBe("placingOrder");
   },
 };
 const orderedTest = {
-  test: async ({ target: { getByText } }: TestCycleContext) => {
-    await wait(() => expect(() => getByText("ordered")).not.toThrowError());
+  test: ({ shared: { currentState } }: TestCycleContext) => {
+    expect(currentState.value).toBe("ordered");
   },
 };
 
@@ -173,18 +230,12 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    const testPlans = testModel
-      .getShortestPathPlans({
-        filter: (state) =>
-          state.context.ordersCompleted <= 1 &&
-          state.context.cartsCanceled <= 1 &&
-          state.context.ordersFailed <= 1,
-      })
-      .filter(
-        (plan) =>
-          plan.state.context.ordersCompleted === 1 &&
-          plan.state.context.cartsCanceled === 1
-      );
+    const testPlans = testModel.getShortestPathPlans({
+      filter: (state) =>
+        state.context.ordersCompleted <= 1 &&
+        state.context.cartsCanceled <= 1 &&
+        state.context.ordersFailed <= 1,
+    });
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {
@@ -192,7 +243,11 @@ describe("Order", () => {
           it(path.description, async () => {
             const submitOrderMock = jest.fn();
 
-            const shared: Shared = {};
+            const stateMachine = createOrderMachine({
+              submitOrder: submitOrderMock,
+            });
+
+            const shared: Shared = { currentState: stateMachine.initialState };
 
             const setSubmitOrderCallbacks = (
               submitOrderCallbacks: PromiseCallbacks
@@ -200,12 +255,18 @@ describe("Order", () => {
               shared.submitOrderCallbacks = submitOrderCallbacks;
             };
 
+            const setCurrentStateWithActions = (state: State<any>) => {
+              // Executing the actions is unnecessary in this case since this state machine has no actions.
+              // But here it is anyways since it is such a common use case.
+              executeActions(state);
+              shared.currentState = state;
+            };
+
             await path.test({
-              target: render(
-                <Order services={{ submitOrder: submitOrderMock as any }} />
-              ),
+              stateMachine,
               shared,
               setSubmitOrderCallbacks,
+              setCurrentStateWithActions,
               submitOrderMock,
             } as TestCycleContext);
           });

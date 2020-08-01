@@ -4,6 +4,10 @@ import Order from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Using Test Machine Context to explore non-shortest paths
+////////////////////////////////////////////////////////////////////////////////
+
 // 1. Add cancel event to event config
 // 2. Update test machine to have cancel option
 // 3. Run the test, notice how the Cancel action is not taken

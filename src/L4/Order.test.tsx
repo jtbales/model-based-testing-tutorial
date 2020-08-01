@@ -4,6 +4,10 @@ import Order from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Testing Asynchronous Services
+////////////////////////////////////////////////////////////////////////////////
+
 // 1. Copy in machine updates
 //    Service is not needed in test machine, just src
 // But we do need to mock the UI service's Promise resolve and reject
@@ -132,10 +136,19 @@ describe("Order", () => {
       getEventConfigs() as any
     );
 
-    const testPlans = testModel.getShortestPathPlans({
-      filter: (state) =>
-        state.context.ordersCompleted <= 1 && state.context.cartsCanceled <= 1,
-    });
+    const testPlans = testModel
+      .getShortestPathPlans({
+        filter: (state) =>
+          state.context.ordersCompleted <= 1 &&
+          state.context.cartsCanceled <= 1,
+      })
+      // Added post-generation filter to reduce combinatorial explosion
+      // 10 tests instead of 35 tests
+      .filter(
+        (plan) =>
+          plan.state.context.ordersCompleted === 1 &&
+          plan.state.context.cartsCanceled === 1
+      );
 
     testPlans.forEach((plan) => {
       describe(plan.description, () => {

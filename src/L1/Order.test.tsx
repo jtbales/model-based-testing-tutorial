@@ -4,6 +4,10 @@ import Order, { getOrderMachineDefinition } from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Basic MBT UI Tests
+////////////////////////////////////////////////////////////////////////////////
+
 // This is the basic setup for model based testing
 // Note the relation to the MBT diagram
 // render(<Order />) is passed into path.test, thus all Event and Assert

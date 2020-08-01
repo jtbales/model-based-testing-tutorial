@@ -16,7 +16,7 @@ type OrderProps = {
 const getServices = (): OrderServices => ({
   // Added service to simulate asynchronous calls to external applications
   submitOrder: () => {
-    const delay = 2000;
+    const delay = 1000;
 
     if (Math.random() < 0.5) {
       return new Promise((resolve) => setTimeout(resolve, delay));
@@ -27,7 +27,7 @@ const getServices = (): OrderServices => ({
   },
 });
 
-const getOrderMachine = (services: OrderServices) =>
+const createOrderMachine = (services: OrderServices) =>
   Machine(
     {
       id: "order",
@@ -59,7 +59,7 @@ const getOrderMachine = (services: OrderServices) =>
 
 const Order: React.FC<OrderProps> = ({ services }) => {
   const [orderMachineState, send] = useMachine(
-    getOrderMachine(services ?? getServices())
+    createOrderMachine(services ?? getServices())
   );
 
   return (

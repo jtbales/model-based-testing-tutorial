@@ -4,6 +4,10 @@ import Order from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Using Test Machine Context to repeat paths
+////////////////////////////////////////////////////////////////////////////////
+
 // 1. Add Event
 // 2. Run tests, notice that the tests does not loop over previously visited states
 // 3. Context is consider part of a unique state, use context to allow the

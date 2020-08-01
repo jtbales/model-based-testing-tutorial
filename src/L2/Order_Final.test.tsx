@@ -4,6 +4,10 @@ import Order from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Using Test Machine Context to repeat paths - FINAL
+////////////////////////////////////////////////////////////////////////////////
+
 const getTestMachine = () =>
   Machine(
     {

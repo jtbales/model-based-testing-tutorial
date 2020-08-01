@@ -4,6 +4,10 @@ import Order, { getOrderMachineDefinition } from "./Order";
 import { render, RenderResult, fireEvent, wait } from "@testing-library/react";
 import React from "react";
 
+////////////////////////////////////////////////////////////////////////////////
+// Basic MBT UI Tests - FINAL
+////////////////////////////////////////////////////////////////////////////////
+
 const getEventConfigs = () => {
   const eventConfigs = {
     ADD_TO_CART: {
