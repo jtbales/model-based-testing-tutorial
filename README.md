@@ -15,7 +15,7 @@ Install dependencies `npm i`
 
 ### Completing the Tutorial
 
-The tutorial is laid out in individial lessons.
+The tutorial is laid out in individual lessons.
 
 The recommend way to complete the tutorial is to
 
