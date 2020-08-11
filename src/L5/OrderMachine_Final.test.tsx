@@ -100,7 +100,7 @@ const getEventConfigs = () => {
         setCurrentStateWithActions(
           stateMachine.transition(currentState, {
             type: "ADD_TO_CART",
-          } as any)
+          })
         );
       },
     },
@@ -121,7 +121,7 @@ const getEventConfigs = () => {
         setCurrentStateWithActions(
           stateMachine.transition(currentState, {
             type: "PLACE_ORDER",
-          } as any)
+          })
         );
       },
     },
@@ -137,7 +137,7 @@ const getEventConfigs = () => {
           setCurrentStateWithActions(
             stateMachine.transition(currentState, {
               type: "done.invoke.submitOrder",
-            } as any)
+            })
           );
         }
       },
@@ -154,7 +154,7 @@ const getEventConfigs = () => {
           setCurrentStateWithActions(
             stateMachine.transition(currentState, {
               type: "error.platform.submitOrder",
-            } as any)
+            })
           );
         }
       },
@@ -168,7 +168,7 @@ const getEventConfigs = () => {
         setCurrentStateWithActions(
           stateMachine.transition(currentState, {
             type: "CONTINUE_SHOPPING",
-          } as any)
+          })
         );
       },
     },
@@ -181,7 +181,7 @@ const getEventConfigs = () => {
         setCurrentStateWithActions(
           stateMachine.transition(currentState, {
             type: "CANCEL",
-          } as any)
+          })
         );
       },
     },
